@@ -58,13 +58,41 @@ func (ArticleController) List(c *gin.Context) {
 	var indexPage orm.IndexPage
 	indexPage.Page = reqData.Page
 	indexPage.Num = reqData.Num
-	err = orm.GetPage(&models.Article{}, &models.Article{}, &list, &indexPage, reqData.Sort, whereOrder...)
+	err = orm.GetPageProload(&models.Article{}, &models.Article{}, &list, &indexPage, "Tag", reqData.Sort, whereOrder...)
 	if err != nil {
 		log.Println(err)
 		resBusinessP(c, err.Error())
 		return
 	}
 	resSuccessPage(c, indexPage, list)
+}
+
+// 获取文章详情
+// @Summary 获取文章详情
+// @Tags   article  文章管理
+// @Accept  json
+// @Produce  json
+// @Param   body    body    handler.IdReq    true     "文章ID"
+// @Success 200 {object}   models.Article 	    "{code:200,msg:ok}"
+// @Failure 400  {object} handler.ResponseModel "{code:400,msg:无效的请求参数}"
+// @Failure 500 {object} handler.ResponseModel  "{code:500,msg:服务器故障}"
+// @Security MustToken
+// @Router /article/:id [get]
+func (ArticleController) Detail(c *gin.Context) {
+	reqData := IdReq{}
+	err := c.ShouldBindUri(&reqData)
+	if err != nil {
+		resBadRequest(c, err.Error())
+		return
+	}
+	article := models.Article{}
+	_, err = orm.FirstByIDRelated(&article, reqData.Id, &article.Tag)
+	if err != nil {
+		log.Println(err)
+		resBusinessP(c, err.Error())
+		return
+	}
+	resSuccess(c, article)
 }
 
 type articleCreateReq struct {
@@ -92,6 +120,16 @@ func (ArticleController) Create(c *gin.Context) {
 		resBadRequest(c, err.Error())
 		return
 	}
+	tag := models.Tag{}
+	notFound, err := orm.FirstByID(&tag, uint(reqData.TagID))
+	if err != nil {
+		if notFound {
+			resBadRequest(c, "tag_id: "+err.Error())
+			return
+		}
+		resBusinessP(c, err.Error())
+		return
+	}
 	article := models.Article{}
 	article.TagID = reqData.TagID
 	article.Title = reqData.Title
@@ -106,14 +144,11 @@ func (ArticleController) Create(c *gin.Context) {
 	resSuccess(c, gin.H{"id": article.ID})
 }
 
-type articleUpdateUriReq struct {
-	Id uint `form:"id" json:"id" uri:"id" binding:"required"` //文章ID
-}
 type articleUpdateReq struct {
-	TagID    int    `form:"tag_id" json:"tag_id"`     // 标签ID
-	Title    string `form:"title" json:"title"`       // 标题
-	Describe string `form:"describe" json:"describe"` // 描述
-	Content  string `form:"content" json:"content"`   // 内容
+	TagID    int    `form:"tag_id" json:"tag_id"`                       // 标签ID
+	Title    string `form:"title" json:"title"`                         // 标题
+	Describe string `form:"describe" json:"describe"`                   // 描述
+	Content  string `form:"content" json:"content"`                     // 内容
 }
 
 // 修改文章
@@ -121,15 +156,15 @@ type articleUpdateReq struct {
 // @Tags   article  文章管理
 // @Accept  json
 // @Produce  json
-// @Param   body    body    handler.tagUpdateUriReq    true     "文章信息"
-// @Param   body    body    handler.tagUpdateReq    true     "文章信息"
+// @Param   body    body    handler.IdReq    true     "文章ID"
+// @Param   body    body    handler.articleUpdateReq    true     "文章信息"
 // @Success 200 {object}   handler.ResponseModel 	"{code:200,msg:ok}"
 // @Failure 400  {object} handler.ResponseModel "{code:400,msg:无效的请求参数}"
 // @Failure 500 {object} handler.ResponseModel  "{code:500,msg:服务器故障}"
 // @Security MustToken
 // @Router /article/:id [put]
 func (ArticleController) Update(c *gin.Context) {
-	reqUriData := articleUpdateUriReq{}
+	reqUriData := IdReq{}
 	reqData := articleUpdateReq{}
 	err := c.ShouldBindUri(&reqUriData)
 	if err != nil {
@@ -139,6 +174,16 @@ func (ArticleController) Update(c *gin.Context) {
 	err = c.ShouldBind(&reqData)
 	if err != nil {
 		resBadRequest(c, err.Error())
+		return
+	}
+	tag := models.Tag{}
+	notFound, err := orm.FirstByID(&tag, uint(reqData.TagID))
+	if err != nil {
+		if notFound {
+			resBadRequest(c, "tag_id: "+err.Error())
+			return
+		}
+		resBusinessP(c, err.Error())
 		return
 	}
 	where := models.Article{}
@@ -152,23 +197,19 @@ func (ArticleController) Update(c *gin.Context) {
 	resSuccessMsg(c)
 }
 
-type articleDeleteReq struct {
-	Id uint `form:"id" json:"id" uri:"id" binding:"required"` //文章ID
-}
-
 // 删除文章
 // @Summary 删除文章
 // @Tags   article  文章管理
 // @Accept  json
 // @Produce  json
-// @Param   body    body    handler.tagDeleteReq    true     "文章信息"
+// @Param   body    body    handler.IdReq    true     "文章ID"
 // @Success 200 {object}   handler.ResponseModel 	"{code:200,msg:ok}"
 // @Failure 400  {object} handler.ResponseModel "{code:400,msg:无效的请求参数}"
 // @Failure 500 {object} handler.ResponseModel  "{code:500,msg:服务器故障}"
 // @Security MustToken
 // @Router /article/:id [delete]
 func (ArticleController) Delete(c *gin.Context) {
-	reqData := articleDeleteReq{}
+	reqData := IdReq{}
 	err := c.ShouldBindUri(&reqData)
 	if err != nil {
 		resBadRequest(c, err.Error())

@@ -24,8 +24,8 @@ type TagController struct {
 // @Param   beginAt      query    string    false     "开始时间"
 // @Param   endAt        query    string    false     "结束时间"
 // @Success 200 {array}   models.Tag 	"标签列表"
-// @Failure 400  {object} handler.ResponseModel "{code:1,msg:无效的请求参数}"
-// @Failure 500 {object} handler.ResponseModel  "{code:-1,msg:服务器故障}"
+// @Failure 400  {object} handler.ResponseModel "{code:400,msg:无效的请求参数}"
+// @Failure 500 {object} handler.ResponseModel  "{code:500,msg:服务器故障}"
 // @Security MustToken
 // @Router /tags [get]
 func (TagController) List(c *gin.Context) {
@@ -75,9 +75,9 @@ type tagCreateReq struct {
 // @Accept  json
 // @Produce  json
 // @Param   body    body    handler.tagCreateReq    true     "标签信息"
-// @Success 200 {object}   handler.ResponseModel 	"{code:0,msg:ok,data:{id:"id"}}"
-// @Failure 400  {object} handler.ResponseModel "{code:1,msg:无效的请求参数}"
-// @Failure 500 {object} handler.ResponseModel  "{code:-1,msg:服务器故障}"
+// @Success 200 {object}   handler.ResponseModel 	"{code:200,msg:ok,data:{id:"id"}}"
+// @Failure 400  {object} handler.ResponseModel "{code:400,msg:无效的请求参数}"
+// @Failure 500 {object} handler.ResponseModel  "{code:500,msg:服务器故障}"
 // @Security MustToken
 // @Router /tag [post]
 func (TagController) Create(c *gin.Context) {
@@ -98,11 +98,8 @@ func (TagController) Create(c *gin.Context) {
 	resSuccess(c, gin.H{"id": tag.ID})
 }
 
-type tagUpdateUriReq struct {
-	Id uint `form:"id" json:"id" uri:"id" binding:"required"` //标签ID
-}
 type tagUpdateReq struct {
-	Name string `form:"name" json:"name" binding:"required"` //标签名称
+	Name string `form:"name" json:"name" binding:"required,min=2,max=10"` //标签名称
 }
 
 // 修改标签
@@ -110,15 +107,15 @@ type tagUpdateReq struct {
 // @Tags   tag  标签管理
 // @Accept  json
 // @Produce  json
-// @Param   body    body    handler.tagUpdateUriReq    true     "标签信息"
+// @Param   body    body    handler.IdReq    true     "标签ID"
 // @Param   body    body    handler.tagUpdateReq    true     "标签信息"
-// @Success 200 {object}   handler.ResponseModel 	"{code:0,msg:ok,data:{id:"id"}}"
-// @Failure 400  {object} handler.ResponseModel "{code:1,msg:无效的请求参数}"
-// @Failure 500 {object} handler.ResponseModel  "{code:-1,msg:服务器故障}"
+// @Success 200 {object}   handler.ResponseModel 	"{code:200,msg:ok}"
+// @Failure 400  {object} handler.ResponseModel "{code:400,msg:无效的请求参数}"
+// @Failure 500 {object} handler.ResponseModel  "{code:500,msg:服务器故障}"
 // @Security MustToken
 // @Router /tag/:id [put]
 func (TagController) Update(c *gin.Context) {
-	reqUriData := tagUpdateUriReq{}
+	reqUriData := IdReq{}
 	reqData := tagUpdateReq{}
 	err := c.ShouldBindUri(&reqUriData)
 	if err != nil {
@@ -141,23 +138,19 @@ func (TagController) Update(c *gin.Context) {
 	resSuccessMsg(c)
 }
 
-type tagDeleteReq struct {
-	Id uint `form:"id" json:"id" uri:"id" binding:"required"` //标签ID
-}
-
 // 删除标签
 // @Summary 删除标签
 // @Tags   tag  标签管理
 // @Accept  json
 // @Produce  json
-// @Param   body    body    handler.tagDeleteReq    true     "标签信息"
-// @Success 200 {object}   handler.ResponseModel 	"{code:0,msg:ok,data:{id:"id"}}"
-// @Failure 400  {object} handler.ResponseModel "{code:1,msg:无效的请求参数}"
-// @Failure 500 {object} handler.ResponseModel  "{code:-1,msg:服务器故障}"
+// @Param   body    body    handler.IdReq    true     "标签ID"
+// @Success 200 {object}   handler.ResponseModel 	"{code:200,msg:ok}"
+// @Failure 400  {object} handler.ResponseModel "{code:400,msg:无效的请求参数}"
+// @Failure 500 {object} handler.ResponseModel  "{code:500,msg:服务器故障}"
 // @Security MustToken
 // @Router /tag/:id [delete]
 func (TagController) Delete(c *gin.Context) {
-	reqData := tagDeleteReq{}
+	reqData := IdReq{}
 	err := c.ShouldBindUri(&reqData)
 	if err != nil {
 		resBadRequest(c, err.Error())

@@ -35,6 +35,10 @@ type ListReq struct {
 	EndAt     time.Time `json:"end_at" form:"end_at" time_format:"2006-01-02 03:04:05"`     //结束时间
 }
 
+type IdReq struct {
+	Id uint `form:"id" json:"id" uri:"id" binding:"required"`
+}
+
 func (l *ListReq) getListQuery(c *gin.Context) (err error) {
 	err = c.ShouldBind(l)
 	if err != nil {
@@ -90,7 +94,7 @@ func resBusinessP(c *gin.Context, msg string) {
 }
 
 //权限错误
-func resUnauthorized(c *gin.Context)  {
+func resUnauthorized(c *gin.Context) {
 	ret := ResponseModel{Code: http.StatusUnauthorized, Message: "未授权"}
 	resJSON(c, http.StatusOK, &ret)
 }

@@ -25,5 +25,13 @@ func InitRouter() *gin.Engine {
 		apiv1.PUT("/tag/:id", tagC.Update)
 		apiv1.DELETE("/tag/:id", tagC.Delete)
 	}
+	articleC := handler.ArticleController{}
+	{
+		apiv1.GET("/articles", articleC.List)
+		apiv1.GET("/article/:id", articleC.Detail)
+		apiv1.POST("/article", articleC.Create)
+		apiv1.PUT("/article/:id", articleC.Update)
+		apiv1.DELETE("/article/:id", articleC.Delete)
+	}
 	return router
 }
