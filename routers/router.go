@@ -3,6 +3,7 @@ package routers
 import (
 	"github.com/gin-gonic/gin"
 	"github.com/zhangxuesong/josephblog/handler"
+	"github.com/zhangxuesong/josephblog/middleware"
 	"github.com/zhangxuesong/josephblog/pkg/config"
 	"net/http"
 )
@@ -16,22 +17,23 @@ func InitRouter() *gin.Engine {
 			"message": "pong",
 		})
 	})
-
-	apiv1 := router.Group("/api/v1")
+	apiPrefix := "/api"
+	admin := router.Group(apiPrefix + "/v1")
+	admin.Use(middleware.JWTAuth())
 	tagC := handler.TagController{}
 	{
-		apiv1.GET("/tags", tagC.List)
-		apiv1.POST("/tag", tagC.Create)
-		apiv1.PUT("/tag/:id", tagC.Update)
-		apiv1.DELETE("/tag/:id", tagC.Delete)
+		admin.GET("/tags", tagC.List)
+		admin.POST("/tag", tagC.Create)
+		admin.PUT("/tag/:id", tagC.Update)
+		admin.DELETE("/tag/:id", tagC.Delete)
 	}
 	articleC := handler.ArticleController{}
 	{
-		apiv1.GET("/articles", articleC.List)
-		apiv1.GET("/article/:id", articleC.Detail)
-		apiv1.POST("/article", articleC.Create)
-		apiv1.PUT("/article/:id", articleC.Update)
-		apiv1.DELETE("/article/:id", articleC.Delete)
+		admin.GET("/articles", articleC.List)
+		admin.GET("/article/:id", articleC.Detail)
+		admin.POST("/article", articleC.Create)
+		admin.PUT("/article/:id", articleC.Update)
+		admin.DELETE("/article/:id", articleC.Delete)
 	}
 	return router
 }

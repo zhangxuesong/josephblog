@@ -7,7 +7,7 @@ service:
 
 #jwt key
 jwt:
-  signKey: api
+  signKey: josephblog
   timeOut: 30
 
 # mysql配置
@@ -20,10 +20,10 @@ mysql:
 
 # redis 配置
 redis:
-  host: 127.0.0.1
+  host: 39.96.22.253
   port: 6379
   auth:
-  db:  12
+  db:  1
 
 # elastic配置
 elastic:
