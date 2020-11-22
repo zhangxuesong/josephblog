@@ -1,0 +1,34 @@
+# 启动模式
+runmode: debug
+
+# 项目配置
+service:
+  port: :8080
+
+#jwt key
+jwt:
+  signKey: api
+  timeOut: 30
+
+# mysql配置
+mysql:
+  username: josephblog
+  port: 3306
+  password: JhfusLrK1N2OOCvUV737LHH1NSaXIqjT
+  db_name: josephblog
+  address: 39.96.22.253
+
+# redis 配置
+redis:
+  host: 127.0.0.1
+  port: 6379
+  auth:
+  db:  12
+
+# elastic配置
+elastic:
+  host: 127.0.0.1
+  #  host: 39.96.22.253
+  port: 9200
+  user:  #elastic
+  password:
