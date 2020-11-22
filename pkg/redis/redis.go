@@ -12,7 +12,7 @@ var Redis *redis.Client
 
 func init() {
 	log.Println("连接Redis。。。")
-	Redis := redis.NewClient(&redis.Options{
+	Redis = redis.NewClient(&redis.Options{
 		Addr:     config.Config.Redis.Host + ":" + config.Config.Redis.Port,
 		Password: config.Config.Redis.Auth,
 		DB:       config.Config.Redis.Db,

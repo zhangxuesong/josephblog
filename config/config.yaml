@@ -8,7 +8,7 @@ service:
 #jwt key
 jwt:
   signKey: josephblog
-  timeOut: 30
+  timeOut: 300
 
 # mysql配置
 mysql:

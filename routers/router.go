@@ -18,7 +18,9 @@ func InitRouter() *gin.Engine {
 		})
 	})
 	apiPrefix := "/api"
-	admin := router.Group(apiPrefix + "/v1")
+	adminC := handler.AdminController{}
+	router.POST(apiPrefix+"/login", adminC.Login)
+	admin := router.Group(apiPrefix + "/admin")
 	admin.Use(middleware.JWTAuth())
 	tagC := handler.TagController{}
 	{
