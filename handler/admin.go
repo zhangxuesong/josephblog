@@ -4,9 +4,9 @@ import (
 	"github.com/gin-gonic/gin"
 	"github.com/zhangxuesong/josephblog/models"
 	"github.com/zhangxuesong/josephblog/pkg/jwt"
+	"github.com/zhangxuesong/josephblog/pkg/log"
 	"github.com/zhangxuesong/josephblog/pkg/orm"
 	"github.com/zhangxuesong/josephblog/pkg/redis"
-	"log"
 	"strconv"
 )
 
@@ -40,11 +40,11 @@ func (AdminController) Login(c *gin.Context) {
 	notFound, err := orm.First(models.Admin{Username: reqData.Username}, &admin)
 	if err != nil {
 		if notFound {
-			log.Println("没有此条记录 %v", reqData.Username)
+			log.Info("没有此条记录 %v", reqData.Username)
 			resBadRequest(c, "没有此条记录")
 			return
 		}
-		log.Println(err)
+		log.Info(err)
 		resBusinessP(c, err.Error())
 		return
 	}

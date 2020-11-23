@@ -4,14 +4,14 @@ import (
 	"fmt"
 	"github.com/go-redis/redis"
 	"github.com/zhangxuesong/josephblog/pkg/config"
-	"log"
+	"github.com/zhangxuesong/josephblog/pkg/log"
 	"time"
 )
 
 var Redis *redis.Client
 
 func init() {
-	log.Println("连接Redis。。。")
+	log.Info("连接Redis。。。")
 	Redis = redis.NewClient(&redis.Options{
 		Addr:     config.Config.Redis.Host + ":" + config.Config.Redis.Port,
 		Password: config.Config.Redis.Auth,
@@ -21,10 +21,10 @@ func init() {
 
 	pong, err := Redis.Ping().Result()
 	if err != nil {
-		log.Println(pong)
-		log.Panic("failed to connect redis：%v", err)
+		log.Warn(pong)
+		log.Fatal("failed to connect redis：%v", err)
 	}
-	log.Println("连接Redis成功。。。")
+	log.Info("连接Redis成功。。。")
 }
 
 // 批量向key的hash添加对应元素field的值
@@ -32,7 +32,7 @@ func BatchHashSet(client *redis.Client, key string, fields map[string]interface{
 	val, err := client.HMSet(key, fields).Result()
 	client.Expire(key, config.Config.Jwt.TimeOut*time.Hour)
 	if err != nil {
-		log.Println("Redis HMSet Error:", err)
+		log.Error("Redis HMSet Error:", err)
 	}
 	return val, err
 }
@@ -44,10 +44,10 @@ func BatchHashGet(client *redis.Client, key string, fields ...string) map[string
 		var result interface{}
 		val, err := client.HGet(key, fmt.Sprintf("%s", field)).Result()
 		if err == redis.Nil {
-			log.Println("Key Doesn't Exists:", field)
+			log.Error("Key Doesn't Exists:", field)
 			resMap[field] = result
 		} else if err != nil {
-			log.Println("Redis HMGet Error:", err)
+			log.Error("Redis HMGet Error:", err)
 			resMap[field] = result
 		}
 		if val != "" {

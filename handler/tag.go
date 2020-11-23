@@ -3,8 +3,8 @@ package handler
 import (
 	"github.com/gin-gonic/gin"
 	"github.com/zhangxuesong/josephblog/models"
+	"github.com/zhangxuesong/josephblog/pkg/log"
 	"github.com/zhangxuesong/josephblog/pkg/orm"
-	"log"
 )
 
 type TagController struct {
@@ -58,7 +58,7 @@ func (TagController) List(c *gin.Context) {
 	indexPage.Num = reqData.Num
 	err = orm.GetPage(&models.Tag{}, &models.Tag{}, &list, &indexPage, reqData.Sort, whereOrder...)
 	if err != nil {
-		log.Println(err)
+		log.Info(err)
 		resBusinessP(c, err.Error())
 		return
 	}
@@ -91,7 +91,7 @@ func (TagController) Create(c *gin.Context) {
 	tag.Name = reqData.Name
 	err = orm.Create(&tag)
 	if err != nil {
-		log.Println(err)
+		log.Info(err)
 		resBusinessP(c, err.Error())
 		return
 	}
@@ -131,7 +131,7 @@ func (TagController) Update(c *gin.Context) {
 	where.ID = reqUriData.Id
 	err = orm.Updates(&where, &reqData)
 	if err != nil {
-		log.Println(err)
+		log.Info(err)
 		resBusinessP(c, err.Error())
 		return
 	}
@@ -158,7 +158,7 @@ func (TagController) Delete(c *gin.Context) {
 	}
 	_, err = orm.DeleteByID(models.Tag{}, reqData.Id)
 	if err != nil {
-		log.Println(err)
+		log.Info(err)
 		resBusinessP(c, err.Error())
 		return
 	}

@@ -4,7 +4,7 @@ import (
 	"errors"
 	"github.com/dgrijalva/jwt-go"
 	"github.com/zhangxuesong/josephblog/pkg/config"
-	"log"
+	"github.com/zhangxuesong/josephblog/pkg/log"
 	"time"
 )
 
@@ -28,7 +28,7 @@ func CreateToken(uid string) (string, error) {
 	claims := &customClaims{}
 	claims.UID = uid
 	claims.ExpiresAt = time.Now().Add(config.Config.Jwt.TimeOut * time.Hour).Unix()
-	log.Println("token内容:", claims)
+	log.Info("token内容:", claims)
 	token, err := jwt.NewWithClaims(jwt.SigningMethodHS256, claims).SignedString(SignKey)
 	return token, err
 }

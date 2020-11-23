@@ -3,8 +3,8 @@ package handler
 import (
 	"github.com/gin-gonic/gin"
 	"github.com/zhangxuesong/josephblog/models"
+	"github.com/zhangxuesong/josephblog/pkg/log"
 	"github.com/zhangxuesong/josephblog/pkg/orm"
-	"log"
 )
 
 type ArticleController struct {
@@ -60,7 +60,7 @@ func (ArticleController) List(c *gin.Context) {
 	indexPage.Num = reqData.Num
 	err = orm.GetPageProload(&models.Article{}, &models.Article{}, &list, &indexPage, "Tag", reqData.Sort, whereOrder...)
 	if err != nil {
-		log.Println(err)
+		log.Info(err)
 		resBusinessP(c, err.Error())
 		return
 	}
@@ -88,7 +88,7 @@ func (ArticleController) Detail(c *gin.Context) {
 	article := models.Article{}
 	_, err = orm.FirstByIDRelated(&article, reqData.Id, &article.Tag)
 	if err != nil {
-		log.Println(err)
+		log.Info(err)
 		resBusinessP(c, err.Error())
 		return
 	}
@@ -137,7 +137,7 @@ func (ArticleController) Create(c *gin.Context) {
 	article.Content = reqData.Content
 	err = orm.Create(&article)
 	if err != nil {
-		log.Println(err)
+		log.Info(err)
 		resBusinessP(c, err.Error())
 		return
 	}
@@ -190,7 +190,7 @@ func (ArticleController) Update(c *gin.Context) {
 	where.ID = reqUriData.Id
 	err = orm.Updates(&where, &reqData)
 	if err != nil {
-		log.Println(err)
+		log.Info(err)
 		resBusinessP(c, err.Error())
 		return
 	}
@@ -217,7 +217,7 @@ func (ArticleController) Delete(c *gin.Context) {
 	}
 	_, err = orm.DeleteByID(models.Article{}, reqData.Id)
 	if err != nil {
-		log.Println(err)
+		log.Info(err)
 		resBusinessP(c, err.Error())
 		return
 	}

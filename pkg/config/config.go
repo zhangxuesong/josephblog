@@ -1,9 +1,9 @@
 package config
 
 import (
+	"github.com/zhangxuesong/josephblog/pkg/log"
 	"gopkg.in/yaml.v2"
 	"io/ioutil"
-	"log"
 	"os"
 	"path/filepath"
 	"time"
@@ -46,21 +46,21 @@ var Config struct {
 }
 
 func init() {
-	log.Println("加载配置文件开始。。。")
+	log.Info("加载配置文件开始。。。")
 	basePath, err := os.Getwd()
 	if err != nil {
-		log.Panic("get base path error!!!")
+		log.Error("get base path error!!!")
 	}
 
 	fileName := filepath.Join(basePath, "config", "config.yaml")
 	config, err := ioutil.ReadFile(fileName)
 	if err != nil {
-		log.Panic("can't read %s", fileName)
+		log.Error("can't read %s", fileName)
 	}
 
 	err = yaml.Unmarshal(config, &Config)
 	if err != nil {
-		log.Panic(err.Error())
+		log.Error(err.Error())
 	}
-	log.Println("加载配置文件成功。。。")
+	log.Info("加载配置文件成功。。。")
 }
