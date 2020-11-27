@@ -12,6 +12,22 @@ func InitRouter() *gin.Engine {
 	gin.SetMode(config.Config.Runmode)
 
 	router := gin.Default()
+
+	router.Use(func(c *gin.Context) {
+		//c.Header("Access-Control-Allow-Origin", "*")                   //跨域
+		//c.Header("Access-Control-Allow-Headers", "token,Content-Type") //必须的请求头
+		//c.Header("Access-Control-Allow-Methods", "OPTIONS,POST,GET,PUT,DELETE")   //接收的请求方法
+		if c.Request.Method != "OPTIONS" {
+			c.Next()
+		} else {
+			c.Header("Access-Control-Allow-Origin", "*")
+			c.Header("Access-Control-Allow-Methods", "GET,POST,PUT,DELETE,OPTIONS")
+			c.Header("Access-Control-Allow-Headers", "token, content-type") //origin, accept
+			c.Header("Content-Type", "application/json")
+			c.AbortWithStatus(http.StatusOK)
+		}
+	})
+
 	router.GET("/ping", func(c *gin.Context) {
 		c.JSON(http.StatusOK, gin.H{
 			"message": "pong",
