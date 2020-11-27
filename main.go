@@ -9,7 +9,6 @@ import (
 
 func main() {
 	router := routers.InitRouter()
-
 	server := &http.Server{
 		Addr:         config.Config.Service.Port,
 		Handler:      router,
