@@ -33,7 +33,7 @@ func JWTAuth() gin.HandlerFunc {
 		_, err = redis.Redis.Exists(token).Result()
 		if err != nil {
 			c.JSON(http.StatusOK, gin.H{
-				"code": 4,
+				"code": http.StatusUnauthorized,
 				"msg":  "token 失效",
 			})
 			c.Abort()

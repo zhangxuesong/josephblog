@@ -21,10 +21,11 @@ func InitRouter() *gin.Engine {
 			c.Next()
 		} else {
 			c.Header("Access-Control-Allow-Origin", "*")
-			c.Header("Access-Control-Allow-Methods", "GET,POST,PUT,DELETE,OPTIONS")
-			c.Header("Access-Control-Allow-Headers", "token, content-type") //origin, accept
+			c.Header("Access-Control-Allow-Methods", "GET,POST,PUT,PATCH,DELETE,OPTIONS")
+			c.Header("Access-Control-Allow-Headers", "token, origin, content-type, accept")
+			c.Header("Allow", "HEAD,GET,POST,PUT,PATCH,DELETE,OPTIONS")
 			c.Header("Content-Type", "application/json")
-			c.AbortWithStatus(http.StatusOK)
+			c.AbortWithStatus(200)
 		}
 	})
 
@@ -38,6 +39,7 @@ func InitRouter() *gin.Engine {
 	router.POST(apiPrefix+"/login", adminC.Login)
 	admin := router.Group(apiPrefix + "/admin")
 	admin.Use(middleware.JWTAuth())
+	admin.GET("/info", adminC.Info)
 	tagC := handler.TagController{}
 	{
 		admin.GET("/tags", tagC.List)
